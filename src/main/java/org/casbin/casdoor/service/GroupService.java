@@ -14,16 +14,15 @@
 
 package org.casbin.casdoor.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.casbin.casdoor.config.Config;
 import org.casbin.casdoor.entity.Group;
 import org.casbin.casdoor.util.GroupOperations;
 import org.casbin.casdoor.util.Map;
 import org.casbin.casdoor.util.http.CasdoorResponse;
-import com.fasterxml.jackson.core.type.TypeReference;
-
-import java.util.List;
 
 import java.io.IOException;
+import java.util.List;
 
 public class GroupService extends Service {
 
@@ -33,14 +32,14 @@ public class GroupService extends Service {
 
     public Group getGroup(String name) throws IOException {
         CasdoorResponse<Group, Object> response = doGet("get-group",
-                Map.of("id", config.organizationName + "/" + name), new TypeReference<CasdoorResponse<Group, Object>>() {
+                Map.of("id", getConfig().getOrganizationName() + "/" + name), new TypeReference<CasdoorResponse<Group, Object>>() {
                 });
         return response.getData();
     }
 
     public List<Group> getGroups() throws IOException {
         CasdoorResponse<List<Group>, Object> response = doGet("get-groups",
-                Map.of("owner", config.organizationName), new TypeReference<CasdoorResponse<List<Group>, Object>>() {
+                Map.of("owner", getConfig().getOrganizationName()), new TypeReference<CasdoorResponse<List<Group>, Object>>() {
                 });
         return response.getData();
     }
@@ -51,7 +50,7 @@ public class GroupService extends Service {
         }
 
         CasdoorResponse<List<Group>, Object> response = doGet("get-groups",
-                Map.of("owner", config.organizationName, "withTree", "true"), new TypeReference<CasdoorResponse<List<Group>, Object>>() {
+                Map.of("owner", getConfig().getOrganizationName(), "withTree", "true"), new TypeReference<CasdoorResponse<List<Group>, Object>>() {
                 });
         return response.getData();
     }
@@ -70,8 +69,8 @@ public class GroupService extends Service {
 
     private <T1, T2> CasdoorResponse<T1, T2> modifyGroup(GroupOperations method, Group group, java.util.Map<String, String> queryMap) throws IOException {
         String id = group.owner + "/" + group.name;
-        group.owner = config.organizationName;
-        String payload = objectMapper.writeValueAsString(group);
+        group.owner = getConfig().getOrganizationName();
+        String payload = getObjectMapper().writeValueAsString(group);
         return doPost(method.getOperation(), Map.mergeMap(Map.of("id", id), queryMap), payload,
                 new TypeReference<CasdoorResponse<T1, T2>>() {
                 });

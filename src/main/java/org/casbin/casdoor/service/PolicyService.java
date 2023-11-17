@@ -31,7 +31,7 @@ public class PolicyService  extends Service{
     }
 
     public List<CasbinRule> getPolicies(String enforcerName, String adapterId) throws IOException {
-        String id = config.organizationName + "/" + enforcerName;
+        String id = getConfig().getOrganizationName() + "/" + enforcerName;
         CasdoorResponse<List<CasbinRule>, Object> resp = doGet("get-policies",
                 Map.of("id", id, "adapterId", adapterId), new TypeReference<CasdoorResponse<List<CasbinRule>, Object>>() {
                 });
@@ -58,13 +58,13 @@ public class PolicyService  extends Service{
     }
 
     private <T1, T2> CasdoorResponse<T1, T2> modifyPolicy(PolicyOperations method, Enforcer enforcer, CasbinRule[] policies) throws IOException {
-        enforcer.owner = config.organizationName;
+        enforcer.owner = getConfig().getOrganizationName();
         String id = enforcer.owner + "/" + enforcer.name;
         String payload = "";
         if (method == PolicyOperations.UPDATE_Policy){
-            payload = objectMapper.writeValueAsString(policies);
+            payload = getObjectMapper().writeValueAsString(policies);
         } else {
-            payload = objectMapper.writeValueAsString(policies[0]);
+            payload = getObjectMapper().writeValueAsString(policies[0]);
         }
         return doPost(method.getOperation(),
                 Map.of("id", id),

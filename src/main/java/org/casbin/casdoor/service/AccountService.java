@@ -14,15 +14,14 @@
 
 package org.casbin.casdoor.service;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.casbin.casdoor.config.Config;
 import org.casbin.casdoor.entity.Organization;
 import org.casbin.casdoor.entity.User;
 import org.casbin.casdoor.util.Map;
 import org.casbin.casdoor.util.http.CasdoorResponse;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.io.IOException;
 
 /**
  * Service Related to Account API
@@ -43,9 +42,9 @@ public class AccountService extends Service {
      */
     public CasdoorResponse setPassword(String userName, String oldPassword, String newPassword) throws IOException {
         return doPost("set-password",
-                Map.of("owner", config.organizationName),
+                Map.of("owner", getConfig().getOrganizationName()),
                 Map.of(
-                        "userOwner", config.organizationName,
+                        "userOwner", getConfig().getOrganizationName(),
                         "userName", userName,
                         "oldPassword", oldPassword,
                         "newPassword", newPassword),
